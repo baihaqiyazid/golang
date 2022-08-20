@@ -1,0 +1,339 @@
+openapi: 3.0.3
+info:
+  title: TODO List
+  description: OPEN API for Todo List
+  termsOfService: https://github.com/baihaqiyazid
+  contact:
+    name: Muhammad Yazid Baihaqi
+    url: https://github.com/baihaqiyazid
+    email: baihaqiyazid16@gmail.com
+  license:
+    name: apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+  version: 1.0.0
+servers:
+- url: "https://{environtment}.programmerzamannow.com/api/v1"
+  description: Todo List RESTFul API Server
+  variables:
+    environtment:
+      description: Server Environtment
+      enum:
+      - dev
+      - qa
+      - prod
+      default: dev
+paths:
+  /todolist:
+    get:
+      tags:
+      - Todolist
+      summary: Get All Todo List
+      description: Get All Active Todo by default
+      parameters:
+      - name: include_done
+        in: query
+        description: Get all include done todo
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: boolean
+          nullable: true
+          default: false
+      - name: name
+        in: query
+        description: Filter todo by name
+        required: false
+        style: form
+        explode: true
+        schema:
+          maxLength: 100
+          minLength: 1
+          type: string
+          nullable: true
+        examples:
+          Go:
+            description: examples todo with name Go
+            value: go
+          Flutter:
+            description: examples todo with name Flutter
+            value: flutter
+      responses:
+        "200":
+          description: Success Get All Todolist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArrayTodolist'
+              examples:
+                success:
+                  description: Example Success get all todo
+                  value:
+                  - id: 1
+                    name: Golang
+                    priority: 3
+                    tags:
+                    - Golang
+                    - Programming
+                  - id: 1
+                    name: PHP
+                    priority: 3
+                    tags:
+                    - php
+                    - Programming
+      security:
+      - TodolistAuth: []
+    post:
+      tags:
+      - Todolist
+      summary: Create Todo List
+      description: Create Active Todo
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrUpdate'
+            examples:
+              Go:
+                description: examples todo with name Go
+                value:
+                  name: Go
+                  priority: 3
+                  tags:
+                  - go
+                  - c
+                  - programming
+              Flutter:
+                description: examples todo with name flutter
+                value:
+                  name: flutter
+                  priority: 3
+                  tags:
+                  - flutter
+                  - c
+                  - programming
+        required: true
+      responses:
+        "200":
+          description: Success Create Todolist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todolist'
+              examples:
+                Go:
+                  description: Success Create Go todolist
+                  value:
+                    id: 1
+                    name: Go
+                    priority: 3
+                    tags:
+                    - go
+                    - c
+                    - programming
+                Flutter:
+                  description: Success Create flutter todolist
+                  value:
+                    id: 2
+                    name: flutter
+                    priority: 3
+                    tags:
+                    - flutter
+                    - c
+                    - programming
+      security:
+      - TodolistAuth: []
+  /todolist/{todolistId}:
+    put:
+      tags:
+      - Todolist
+      summary: Update Todo List
+      description: Update one todo by default
+      parameters:
+      - name: todolistId
+        in: path
+        description: id for update todo
+        required: true
+        style: simple
+        explode: false
+        schema:
+          minLength: 1
+          type: string
+        examples:
+          Go:
+            description: Put id Go
+            value: "1"
+          Flutter:
+            description: Put id Flutter
+            value: "2"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrUpdate'
+          examples: {}
+        required: true
+      responses:
+        "200":
+          description: Success Update Todolist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200'
+              examples:
+                Go:
+                  description: Success Create Go todolist
+                  value:
+                    id: 1
+                    name: Go
+                    priority: 3
+                    tags:
+                    - go
+                    - c
+                    - programming
+                Flutter:
+                  description: Success Create flutter todolist
+                  value:
+                    id: 2
+                    name: flutter
+                    priority: 3
+                    tags:
+                    - flutter
+                    - c
+                    - programming
+      security:
+      - TodolistAuth: []
+    delete:
+      tags:
+      - Todolist
+      summary: Delete Todo List
+      description: Delete Active Todo by default
+      parameters:
+      - name: todolistId
+        in: path
+        description: id for delete todo
+        required: true
+        style: simple
+        explode: false
+        schema:
+          minLength: 1
+          type: string
+      responses:
+        "200":
+          description: Success Deleted Todolist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_1'
+              examples:
+                success:
+                  description: Success Delete Todo
+                  value:
+                    success: true
+        "404":
+          description: Failed Delete. Todolist Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_1'
+              examples:
+                failed:
+                  description: Failed Delete Todo
+                  value:
+                    success: false
+      security:
+      - TodolistAuth: []
+components:
+  schemas:
+    Todolist:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        priority:
+          type: number
+        tags:
+          type: array
+          items:
+            type: string
+      example:
+        name: name
+        id: 0
+        priority: 6.02745618307040320615897144307382404804229736328125
+        tags:
+        - tags
+        - tags
+    CreateOrUpdate:
+      type: object
+      properties:
+        name:
+          minLength: 3
+          type: string
+        priority:
+          maxLength: 3
+          type: integer
+          format: int32
+          default: 1
+        tags:
+          minItems: 1
+          type: array
+          items:
+            minLength: 1
+            type: string
+    ArrayTodolist:
+      $ref: '#/components/schemas/Todolist'
+    inline_response_200:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        priority:
+          type: number
+        tags:
+          type: array
+          items:
+            type: string
+      example:
+        name: name
+        id: 0
+        priority: 6.02745618307040320615897144307382404804229736328125
+        tags:
+        - tags
+        - tags
+    inline_response_200_1:
+      type: object
+      properties:
+        success:
+          type: boolean
+      example:
+        success: true
+  parameters:
+    TodolistId:
+      name: todolistId
+      in: path
+      description: id for update todo
+      required: true
+      style: simple
+      explode: false
+      schema:
+        minLength: 1
+        type: string
+      examples:
+        Go:
+          description: Put id Go
+          value: "1"
+        Flutter:
+          description: Put id Flutter
+          value: "2"
+  securitySchemes:
+    TodolistAuth:
+      type: apiKey
+      description: Authentication For RESTFul Api Todolist
+      name: X-API-Key
+      in: header

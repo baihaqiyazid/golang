@@ -1,0 +1,22 @@
+{
+    "first_name": "Syam",
+    "last_name": "Ling",
+    "age": 21,
+    "hobbies": [
+        "Gaming",
+        "Reading",
+        "Coding"
+    ],
+    "address": [
+        {
+            "street": "Jl. Pengadegan",
+            "city": "Jakarta Selatan",
+            "country": "Indonesia"
+        },
+        {
+            "street": "Jl. Potlot",
+            "city": "Jakarta Barat",
+            "country": "Indonesia"
+        }
+    ]
+}
