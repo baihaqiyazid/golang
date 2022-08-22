@@ -9,12 +9,21 @@ import (
 	"go-restful-api/repository"
 
 	"github.com/go-playground/validator/v10"
+	"go-restful-api/exception"
 )
 
 type CategoryServiceImpl struct {
-	repository repository.CategoryRepository
+	Repository repository.CategoryRepository
 	DB         *sql.DB
 	Validate   *validator.Validate
+}
+
+func NewCategoryService(repository repository.CategoryRepository, DB *sql.DB, Validate *validator.Validate) CategoryService{
+	return &CategoryServiceImpl{
+		Repository: repository,
+		DB: DB,
+		Validate: Validate,
+	}
 }
 
 func (service *CategoryServiceImpl) Create(ctx context.Context, request web.CategoryCreateRequest) web.CategoryResponse {
@@ -30,7 +39,7 @@ func (service *CategoryServiceImpl) Create(ctx context.Context, request web.Cate
 		Name: request.Name,
 	}
 
-	category = service.repository.Create(ctx, tx, category)
+	category = service.Repository.Create(ctx, tx, category)
 
 	return helper.ToCategoryResponse(category)
 }
@@ -44,12 +53,14 @@ func (service *CategoryServiceImpl) Update(ctx context.Context, request web.Cate
 	helper.Panic(err)
 	defer helper.CommitOrRollback(tx)
 
-	category, err := service.repository.GetById(ctx, tx, request.Id) //Check Category exist
-	helper.Panic(err)
+	category, err := service.Repository.GetById(ctx, tx, request.Id) //Check Category exist
+	if err != nil {
+		panic(exception.NewNotFoundError(err.Error())) 
+	}
 
 	category.Name = request.Name
 
-	category = service.repository.Update(ctx, tx, category)
+	category = service.Repository.Update(ctx, tx, category)
 
 	return helper.ToCategoryResponse(category)
 }
@@ -59,10 +70,12 @@ func (service *CategoryServiceImpl) Delete(ctx context.Context, categoryId int) 
 	helper.Panic(err)
 	defer helper.CommitOrRollback(tx)
 
-	category, err := service.repository.GetById(ctx, tx, categoryId) //Check Category exist
-	helper.Panic(err)
+	category, err := service.Repository.GetById(ctx, tx, categoryId) //Check Category exist
+	if err != nil {
+		panic(exception.NewNotFoundError(err.Error())) 
+	}
 
-	service.repository.Delete(ctx, tx, category)
+	service.Repository.Delete(ctx, tx, category)
 }
 
 func (service *CategoryServiceImpl) GetById(ctx context.Context, categoryId int) web.CategoryResponse {
@@ -70,8 +83,10 @@ func (service *CategoryServiceImpl) GetById(ctx context.Context, categoryId int)
 	helper.Panic(err)
 	defer helper.CommitOrRollback(tx)
 
-	category, err := service.repository.GetById(ctx, tx, categoryId) //Check Category exist
-	helper.Panic(err)
+	category, err := service.Repository.GetById(ctx, tx, categoryId) //Check Category exist
+	if err != nil {
+		panic(exception.NewNotFoundError(err.Error())) 
+	}
 
 	return helper.ToCategoryResponse(category)
 }
@@ -81,7 +96,7 @@ func (service *CategoryServiceImpl) GetAll(ctx context.Context) []web.CategoryRe
 	helper.Panic(err)
 	defer helper.CommitOrRollback(tx)
 
-	categories := service.repository.GetAll(ctx, tx) //Check Category exist
+	categories := service.Repository.GetAll(ctx, tx) //Check Category exist
 
 	var categoryResponses []web.CategoryResponse
 	for _, category := range categories {

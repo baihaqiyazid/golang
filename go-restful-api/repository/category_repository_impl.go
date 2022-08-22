@@ -12,6 +12,10 @@ type CategoryRepositoryImpl struct{
 
 }
 
+func NewCategoryRepository() CategoryRepository  {
+	return &CategoryRepositoryImpl{}
+}
+
 func (repository *CategoryRepositoryImpl) Create(ctx context.Context, tx *sql.Tx, category entity.Category) entity.Category  {
 	query := "INSERT INTO categories(name) VALUES(?)"
 	
@@ -47,6 +51,7 @@ func (repository *CategoryRepositoryImpl) GetById(ctx context.Context, tx *sql.T
 
 	rows, err := tx.QueryContext(ctx, query, categoryId)
 	helper.Panic(err)
+	defer rows.Close()
 
 	category := entity.Category{}
 
@@ -64,6 +69,8 @@ func (repository *CategoryRepositoryImpl) GetAll(ctx context.Context, tx *sql.Tx
 
 	rows, err := tx.QueryContext(ctx, query)
 	helper.Panic(err)
+	defer rows.Close()
+
 
 	var categories []entity.Category
 
