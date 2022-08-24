@@ -1,0 +1,10 @@
+time="2022-08-24T02:37:45+07:00" level=trace msg="This is Trace"
+time="2022-08-24T02:37:45+07:00" level=debug msg="This is Debug"
+time="2022-08-24T02:37:45+07:00" level=info msg="This is Info"
+time="2022-08-24T02:37:45+07:00" level=warning msg="This is Warning"
+time="2022-08-24T02:37:45+07:00" level=error msg="This is Error"
+{"level":"trace","msg":"This is Trace","time":"2022-08-24T02:41:52+07:00"}
+{"level":"debug","msg":"This is Debug","time":"2022-08-24T02:41:52+07:00"}
+{"level":"info","msg":"This is Info","time":"2022-08-24T02:41:52+07:00"}
+{"level":"warning","msg":"This is Warning","time":"2022-08-24T02:41:52+07:00"}
+{"level":"error","msg":"This is Error","time":"2022-08-24T02:41:52+07:00"}
